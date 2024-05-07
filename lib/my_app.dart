@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jornada/pages/carregamento_page.dart';
+import 'package:jornada/shared/colors.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -9,9 +10,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.lightBlue,
+          backgroundColor: ColorsApp.primaryColor,
         ),
       ),
       home: const CarregamentoPage(),
