@@ -1,5 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jornada/shared/colors.dart';
 import 'package:jornada/shared/widgets/app_images.dart';
 
@@ -15,12 +17,83 @@ class DestinoPage extends StatefulWidget {
 class _DestinoPageState extends State<DestinoPage> {
   late CarouselController _carouselController;
   late CarouselController _carouselControllerComentarios;
+  late String _descricaoDestino = "";
+  bool _mostrarTextoCompleto = false;
+  List<String> imageUrls = ["", ""];
 
   @override
   void initState() {
     super.initState();
     _carouselController = CarouselController();
     _carouselControllerComentarios = CarouselController();
+    _fetchDescricaoDestino();
+    _fetchImageUrls(widget.searchText);
+  }
+
+  Future<void> _fetchDescricaoDestino() async {
+    try {
+      final String apiKey = dotenv.get("TEXTCORTEX_APIKEY");
+      final String url = 'https://api.textcortex.com/v1/texts/blogs';
+
+      final dio = Dio();
+      dio.options.headers['Authorization'] = 'Bearer $apiKey';
+
+      final response = await dio.post(
+        url,
+        data: {
+          "context": widget.searchText,
+          "formality": "default",
+          "keywords": [widget.searchText, "locais turísticos", "passeios"],
+          "max_tokens": 2048,
+          "model": "chat-sophos-1",
+          "n": 1,
+          "source_lang": "pt",
+          "target_lang": "pt-br",
+          "temperature": 0.65,
+          "title": widget.searchText
+        },
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _descricaoDestino = response.data['data']['outputs'][0]['text'].replaceAll('"', '');
+        });
+      } else {
+        print('Erro ao carregar descrição do destino: ${response.statusCode}');
+        print('DESCRIÇÃO DO DESTINO: ${response.data}');
+        throw Exception('Erro ao carregar descrição do destino: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao carregar descrição do destino: $e');
+    }
+
+    print("DESCRIÇÃO DO DESTINO :::>>> $_descricaoDestino");
+  }
+
+  Future<void> _fetchImageUrls(String searchText) async {
+    final String apiKey = dotenv.get("GOOGLESEARCH_APIKEY");
+    final String searchEngineId = dotenv.get("GOOGLESEARCH_ENGINE_ID");
+    final String url = "https://www.googleapis.com/customsearch/v1?key=$apiKey&cx=$searchEngineId&searchType=image&q=$searchText";
+
+    final dio = Dio();
+
+    try {
+      final response = await dio.get(url);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> items = response.data["items"];
+        imageUrls.clear();
+        for (var i = 0; i < items.length && i < 2; i++) {
+          final String imageUrl = items[i]["link"];
+          imageUrls.add(imageUrl);
+        }
+      } else {
+        print(Exception("Falha ao carregar imagens: ${response.statusCode}"));
+      }
+    } catch (e) {
+      print(Exception("Erro ao processar solicitação: $e"));
+    }
+    print("IMAGENS:: $imageUrls");
   }
 
   @override
@@ -55,17 +128,36 @@ class _DestinoPageState extends State<DestinoPage> {
                   color: ColorsApp.primaryColor,
                   padding: const EdgeInsets.all(10),
                   width: MediaQuery.of(context).size.width,
-                  child: const Column(
+                  child: Column(
                     children: [
                       Padding(
-                        padding: EdgeInsets.all(20.0),
+                        padding: const EdgeInsets.all(20.0),
                         child: Center(
-                            child: Text(
-                          "Um lugar muito bonito, cheio de belas paisagens, hotéis, praia, frio, neve, calor e também frio quando é noite durante o dia.",
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
-                        )),
+                          child: _descricaoDestino.isNotEmpty
+                              ? Text(
+                                  _mostrarTextoCompleto
+                                      ? _descricaoDestino
+                                      : _descricaoDestino.length > 100
+                                          ? '${_descricaoDestino.substring(0, 100)}... '
+                                          : _descricaoDestino,
+                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.justify,
+                                )
+                              : Image.asset(
+                                  AppImages.logo_animado,
+                                  width: MediaQuery.of(context).size.width * 0.5,
+                                ),
+                        ),
                       ),
+                      if (_descricaoDestino.length > 100)
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _mostrarTextoCompleto = !_mostrarTextoCompleto;
+                            });
+                          },
+                          child: _mostrarTextoCompleto ? const Icon(Icons.expand_less) : const Text("Leia mais..."), // Ícone "leia mais" ou "recolher"
+                        ),
                     ],
                   ),
                 ),
@@ -73,6 +165,11 @@ class _DestinoPageState extends State<DestinoPage> {
             ),
             const SizedBox(
               height: 25,
+            ),
+            Text(
+              "Imagens de ${widget.searchText}",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: ColorsApp.accentColor),
+              textAlign: TextAlign.center,
             ),
             CarouselSlider(
               carouselController: _carouselController,
@@ -95,39 +192,32 @@ class _DestinoPageState extends State<DestinoPage> {
                   margin: const EdgeInsets.all(5.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.0),
-                    image: DecorationImage(
-                      image: AssetImage(AppImages.sem_foto),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: const Text(
-                    'Descrição da imagem 1',
-                    style: TextStyle(
-                      color: ColorsApp.textColorBlack,
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    image: imageUrls[0] != ""
+                        ? DecorationImage(
+                            image: NetworkImage(imageUrls[0]),
+                            fit: BoxFit.cover,
+                          )
+                        : DecorationImage(
+                            image: AssetImage(AppImages.sem_foto),
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
                 Container(
                   margin: const EdgeInsets.all(5.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.0),
-                    image: DecorationImage(
-                      image: AssetImage(AppImages.sem_foto),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: const Text(
-                    'Descrição da imagem 2',
-                    style: TextStyle(
-                      color: ColorsApp.textColorBlack,
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    image: imageUrls[1] != ""
+                        ? DecorationImage(
+                            image: NetworkImage(imageUrls[1]),
+                            fit: BoxFit.cover,
+                          )
+                        : DecorationImage(
+                            image: AssetImage(AppImages.sem_foto),
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
-                // Adicione mais imagens e descrições conforme necessário
               ],
             ),
             Row(

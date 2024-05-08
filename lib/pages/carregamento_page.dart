@@ -1,6 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:jornada/pages/home_page.dart';
+import 'package:jornada/shared/colors.dart';
 import 'package:jornada/shared/widgets/app_images.dart';
 
 class CarregamentoPage extends StatefulWidget {
@@ -19,8 +20,7 @@ class _CarregamentoPageState extends State<CarregamentoPage> {
 
   carregarHome() async {
     Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const HomePage()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomePage()));
     });
     setState(() {});
   }
@@ -31,19 +31,15 @@ class _CarregamentoPageState extends State<CarregamentoPage> {
         child: Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-              Colors.blue,
-              Colors.lightBlue,
-              Colors.blueGrey,
-            ],
-                stops: [
-              0.2,
-              0.3,
-              0.7,
-            ])),
+            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [
+          ColorsApp.accentColor,
+          ColorsApp.secondaryColor,
+          ColorsApp.primaryColor,
+        ], stops: [
+          0.2,
+          0.3,
+          0.7,
+        ])),
         child: Center(
           child: SizedBox(
             width: 250.0,
@@ -58,7 +54,7 @@ class _CarregamentoPageState extends State<CarregamentoPage> {
                     height: 150,
                   ),
                   Image.asset(
-                    AppImages.logo_branco,
+                    AppImages.logo_animado,
                     width: 200,
                   ),
                   AnimatedTextKit(
