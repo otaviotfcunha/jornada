@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:jornada/models/destino_estacao_model.dart';
+import 'package:jornada/models/destino_home_model.dart';
+import 'package:jornada/models/feedback_home_model.dart';
+import 'package:jornada/models/utils.dart';
 import 'package:jornada/pages/destino_page.dart';
+import 'package:jornada/repositories/jornada_api_repository.dart';
 import 'package:jornada/shared/colors.dart';
+import 'package:jornada/shared/widgets/alta_estacao.dart';
 import 'package:jornada/shared/widgets/app_images.dart';
+import 'package:jornada/shared/widgets/feedback_usuarios.dart';
+import 'package:jornada/shared/widgets/itens_carrossel_imagens.dart';
 import 'package:jornada/shared/widgets/menu_lateral.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,14 +21,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
-  late CarouselController _carouselController;
-  late CarouselController _carouselControllerComentarios;
+  JornadaApiRepository _jornadaApiRepository = JornadaApiRepository();
+  var _destinosHome = DestinosHomeModel([]);
+  var _estacaoHome = DestinosEstacaoModel([]);
+  var _feedbackHome = FeedbacksHomeModel([]);
+  List<String> _imagensEstacao = [];
+  List<String> _imagensDestinosHome = [];
+  bool carregando = false;
 
   @override
   void initState() {
     super.initState();
-    _carouselController = CarouselController();
-    _carouselControllerComentarios = CarouselController();
+    _carregarDados();
   }
 
   void _search() {
@@ -34,6 +45,46 @@ class _HomePageState extends State<HomePage> {
         ),
       );
     }
+  }
+
+  Future<void> _carregarDados() async {
+    setState(() {
+      carregando = true;
+    });
+
+    try {
+      await _carregaDestinosHome();
+      await _carregaEstacaoHome();
+      await _carregaFeedbackHome();
+    } catch (e) {
+      print('Erro ao carregar dados: $e');
+    }
+
+    setState(() {
+      carregando = false;
+    });
+  }
+
+  Future<void> _carregaDestinosHome() async {
+    _destinosHome = await _jornadaApiRepository.carregarDestinosHome();
+    _imagensDestinosHome.clear();
+    await Future.forEach(_destinosHome.results, (destino) async {
+      List<String> imagensDestino = await Utils.pegaImagensGoogle(destino.nome, 1);
+      _imagensDestinosHome.addAll(imagensDestino);
+    });
+  }
+
+  Future<void> _carregaEstacaoHome() async {
+    _estacaoHome = await _jornadaApiRepository.carregarEstacaoHome();
+    _imagensEstacao.clear();
+    await Future.forEach(_estacaoHome.results, (estacao) async {
+      List<String> imagensEstacao = await Utils.pegaImagensGoogle(estacao.nome, 1);
+      _imagensEstacao.addAll(imagensEstacao);
+    });
+  }
+
+  Future<void> _carregaFeedbackHome() async {
+    _feedbackHome = await _jornadaApiRepository.carregarFeedbackHome();
   }
 
   @override
@@ -58,292 +109,57 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ),
-          body: ListView(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: TextField(
-                      controller: _searchController,
-                      onSubmitted: (_) => _search(),
-                      decoration: InputDecoration(
-                        hintText: 'Para onde vamos viajar',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        suffixIcon: IconButton(
-                          onPressed: _search,
-                          icon: const Icon(Icons.search),
-                        ),
-                      ),
-                    ),
-                  ),
-                  CarouselSlider(
-                    carouselController: _carouselController,
-                    options: CarouselOptions(
-                      height: 200,
-                      aspectRatio: 16 / 9,
-                      viewportFraction: 0.8,
-                      initialPage: 0,
-                      enableInfiniteScroll: true,
-                      reverse: false,
-                      autoPlay: true,
-                      autoPlayInterval: const Duration(seconds: 3),
-                      autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                      autoPlayCurve: Curves.fastOutSlowIn,
-                      enlargeCenterPage: true,
-                      scrollDirection: Axis.horizontal,
-                    ),
-                    items: <Widget>[
-                      Container(
-                        margin: const EdgeInsets.all(5.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.0),
-                          image: DecorationImage(
-                            image: AssetImage(AppImages.sem_foto),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        child: const Text(
-                          'Descrição da imagem 1',
-                          style: TextStyle(
-                            color: ColorsApp.textColorBlack,
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(5.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.0),
-                          image: DecorationImage(
-                            image: AssetImage(AppImages.sem_foto),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        child: const Text(
-                          'Descrição da imagem 2',
-                          style: TextStyle(
-                            color: ColorsApp.textColorBlack,
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      // Adicione mais imagens e descrições conforme necessário
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          _carouselController.previousPage();
-                        },
-                        icon: const Icon(Icons.arrow_back_ios),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          _carouselController.nextPage();
-                        },
-                        icon: const Icon(Icons.arrow_forward_ios),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              Row(
-                children: [
-                  Container(
-                    color: ColorsApp.primaryColor,
-                    padding: const EdgeInsets.all(20),
-                    width: MediaQuery.of(context).size.width,
-                    child: Column(
+          body: carregando
+              ? const Center(child: CircularProgressIndicator())
+              : ListView(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Text(
-                          "Em alta para a estação:",
-                          style: TextStyle(color: ColorsApp.textColorBlack, fontSize: 16, fontWeight: FontWeight.bold),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          child: TextField(
+                            controller: _searchController,
+                            onSubmitted: (_) => _search(),
+                            decoration: InputDecoration(
+                              hintText: 'Para onde vamos viajar',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: _search,
+                                icon: const Icon(Icons.search),
+                              ),
+                            ),
+                          ),
                         ),
-                        const SizedBox(height: 5),
-                        const Text(
-                          "INVERNO",
-                          style: TextStyle(color: ColorsApp.accentColor, fontSize: 24, fontWeight: FontWeight.bold),
+                        ItensCarrosselImagens(destinosHome: _destinosHome, imagens: _imagensDestinosHome)
+                      ],
+                    ),
+                    Row(children: _imagensEstacao.isNotEmpty ? [AltaEstacao(estacao: _estacaoHome, imagens: _imagensEstacao)] : [Text('Sem imagens disponíveis')] // Ou qualquer outro widget de reserva
                         ),
-                        const SizedBox(height: 5),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(15), // Ajuste o valor conforme necessário
-                          child: Image(
-                            image: AssetImage(AppImages.sem_foto),
-                            width: MediaQuery.of(context).size.width * 0.8,
+                    Row(
+                      children: [FeedbackUsuarios(comentario: _feedbackHome)],
+                    ),
+                    Row(
+                      children: [
+                        Container(
+                          color: ColorsApp.primaryColor,
+                          padding: const EdgeInsets.all(10),
+                          width: MediaQuery.of(context).size.width,
+                          child: Column(
+                            children: [
+                              Image(
+                                image: AssetImage(AppImages.logo_branco),
+                                width: MediaQuery.of(context).size.width * 0.5,
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Container(
-                    color: ColorsApp.backgroundColor,
-                    padding: const EdgeInsets.all(20),
-                    width: MediaQuery.of(context).size.width,
-                    child: Column(
-                      children: [
-                        const Text(
-                          "USUÁRIOS DO APP DISSERAM",
-                          style: TextStyle(color: ColorsApp.textColorBlack, fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 5),
-                        CarouselSlider(
-                          carouselController: _carouselControllerComentarios,
-                          options: CarouselOptions(
-                            height: 200,
-                            aspectRatio: 16 / 9,
-                            viewportFraction: 0.8,
-                            initialPage: 0,
-                            enableInfiniteScroll: true,
-                            reverse: false,
-                            autoPlay: true,
-                            autoPlayInterval: const Duration(seconds: 3),
-                            autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                            autoPlayCurve: Curves.fastOutSlowIn,
-                            enlargeCenterPage: true,
-                            scrollDirection: Axis.horizontal,
-                          ),
-                          items: <Widget>[
-                            Container(
-                              padding: const EdgeInsets.all(10.0),
-                              decoration: BoxDecoration(
-                                color: ColorsApp.textColor,
-                                borderRadius: BorderRadius.circular(10), // Ajuste o valor conforme necessário
-                              ),
-                              child: const Column(
-                                children: [
-                                  Text(
-                                    'Muito bom o aplicativo, gostei bastante!',
-                                    style: TextStyle(
-                                      color: ColorsApp.textColorBlack,
-                                      fontSize: 24.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.star,
-                                        color: ColorsApp.textDourado,
-                                      ),
-                                      Icon(
-                                        Icons.star,
-                                        color: ColorsApp.textDourado,
-                                      ),
-                                      Icon(
-                                        Icons.star,
-                                        color: ColorsApp.textDourado,
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(10.0),
-                              decoration: BoxDecoration(
-                                color: ColorsApp.textColor,
-                                borderRadius: BorderRadius.circular(10), // Ajuste o valor conforme necessário
-                              ),
-                              child: const Column(
-                                children: [
-                                  Text(
-                                    'Me ajudou a encontrar a área com neve no Ceará!',
-                                    style: TextStyle(
-                                      color: ColorsApp.textColorBlack,
-                                      fontSize: 24.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.star,
-                                        color: ColorsApp.textDourado,
-                                      ),
-                                      Icon(
-                                        Icons.star,
-                                        color: ColorsApp.textDourado,
-                                      ),
-                                      Icon(
-                                        Icons.star,
-                                        color: ColorsApp.textDourado,
-                                      ),
-                                      Icon(
-                                        Icons.star,
-                                        color: ColorsApp.textDourado,
-                                      ),
-                                      Icon(
-                                        Icons.star,
-                                        color: ColorsApp.textDourado,
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-
-                            // Adicione mais comentários conforme necessário
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                _carouselControllerComentarios.previousPage();
-                              },
-                              icon: const Icon(Icons.arrow_back_ios),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                _carouselControllerComentarios.nextPage();
-                              },
-                              icon: const Icon(Icons.arrow_forward_ios),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Container(
-                    color: ColorsApp.primaryColor,
-                    padding: const EdgeInsets.all(10),
-                    width: MediaQuery.of(context).size.width,
-                    child: Column(
-                      children: [
-                        Image(
-                          image: AssetImage(AppImages.logo_branco),
-                          width: MediaQuery.of(context).size.width * 0.5,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          )),
+                  ],
+                )),
     );
   }
 }
