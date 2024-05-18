@@ -6,7 +6,16 @@ class DepoimentosDestinoModel {
   DepoimentosDestinoModel(this.results);
 
   DepoimentosDestinoModel.fromJson(List<dynamic> jsonList) {
-    results = jsonList.map((json) => DepoimentoDestinoModel.fromJson(json)).toList();
+    // Verificar se jsonList contém uma lista de listas
+    if (jsonList.isNotEmpty && jsonList.first is List) {
+      for (var innerList in jsonList) {
+        if (innerList is List) {
+          results.addAll(innerList.map((json) => DepoimentoDestinoModel.fromJson(json)).toList());
+        }
+      }
+    } else {
+      results = jsonList.map((json) => DepoimentoDestinoModel.fromJson(json)).toList();
+    }
   }
 
   Map<String, dynamic> toJson() {

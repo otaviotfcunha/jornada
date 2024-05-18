@@ -65,7 +65,7 @@ class _ItensCarrosselImagensState extends State<ItensCarrosselImagens> {
                         foreground: Paint()
                           ..style = PaintingStyle.stroke
                           ..strokeWidth = 5
-                          ..color = ColorsApp.primaryColor,
+                          ..color = ColorsApp.primaryColor(),
                       ),
                     ),
                   ),
@@ -74,10 +74,10 @@ class _ItensCarrosselImagensState extends State<ItensCarrosselImagens> {
                     left: 10.0,
                     child: Text(
                       destino.nome,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24.0,
                         fontWeight: FontWeight.bold,
-                        color: ColorsApp.accentColor,
+                        color: ColorsApp.accentColor(),
                       ),
                     ),
                   ),

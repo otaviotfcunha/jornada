@@ -144,7 +144,7 @@ class _HomePageState extends State<HomePage> {
                     Row(
                       children: [
                         Container(
-                          color: ColorsApp.primaryColor,
+                          color: ColorsApp.primaryColor(),
                           padding: const EdgeInsets.all(10),
                           width: MediaQuery.of(context).size.width,
                           child: Column(

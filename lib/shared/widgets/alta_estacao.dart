@@ -16,7 +16,7 @@ class _AltaEstacaoState extends State<AltaEstacao> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: ColorsApp.primaryColor,
+      color: ColorsApp.primaryColor(),
       padding: const EdgeInsets.all(20),
       width: MediaQuery.of(context).size.width,
       child: Column(
@@ -28,7 +28,7 @@ class _AltaEstacaoState extends State<AltaEstacao> {
           const SizedBox(height: 5),
           Text(
             widget.estacao.results[0].estacao,
-            style: TextStyle(color: ColorsApp.accentColor, fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(color: ColorsApp.accentColor(), fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 5),
           ClipRRect(
@@ -51,7 +51,7 @@ class _AltaEstacaoState extends State<AltaEstacao> {
                       foreground: Paint()
                         ..style = PaintingStyle.stroke
                         ..strokeWidth = 5
-                        ..color = ColorsApp.primaryColor,
+                        ..color = ColorsApp.primaryColor(),
                     ),
                   ),
                 ),
@@ -60,10 +60,10 @@ class _AltaEstacaoState extends State<AltaEstacao> {
                   bottom: 10, // Define a posição vertical do texto
                   child: Text(
                     widget.estacao.results[0].nome,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: ColorsApp.accentColor,
+                      color: ColorsApp.accentColor(),
                     ),
                   ),
                 ),

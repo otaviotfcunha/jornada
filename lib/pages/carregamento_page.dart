@@ -30,11 +30,11 @@ class _CarregamentoPageState extends State<CarregamentoPage> {
     return SafeArea(
         child: Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
             gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [
-          ColorsApp.accentColor,
-          ColorsApp.secondaryColor,
-          ColorsApp.primaryColor,
+          ColorsApp.accentColor(),
+          ColorsApp.secondaryColor(),
+          ColorsApp.primaryColor(),
         ], stops: [
           0.2,
           0.3,

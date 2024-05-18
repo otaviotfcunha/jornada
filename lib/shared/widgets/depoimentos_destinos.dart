@@ -18,7 +18,7 @@ class _FeedbackUsuariosState extends State<DepoimentosDestinosUsuarios> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: ColorsApp.backgroundColor,
+      color: ColorsApp.backgroundColor(),
       padding: const EdgeInsets.all(20),
       width: MediaQuery.of(context).size.width,
       child: Column(

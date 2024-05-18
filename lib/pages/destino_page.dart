@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:jornada/models/destino_depoimentos_model.dart';
 import 'package:jornada/models/destino_pesquisa_model.dart';
@@ -40,8 +42,7 @@ class _DestinoPageState extends State<DestinoPage> {
 
     try {
       await _carregaDestino();
-      await _carregarRoteiros();
-      //await _carregaDepoimentos();
+      await _carregaDepoimentos();
     } catch (e) {
       print('Erro ao carregar dados: $e');
     }
@@ -64,8 +65,8 @@ class _DestinoPageState extends State<DestinoPage> {
     _depoimentos = await _jornadaApiRepository.carregarDepoimentos(widget.searchText);
   }
 
-  Future<void> _carregarRoteiros() async {
-    _roteiro = await _jornadaApiRepository.carregarRoteiroDestino(widget.searchText, 5, true);
+  Future<void> _carregarRoteiros(int dias, bool incluirTransporte) async {
+    _roteiro = await _jornadaApiRepository.carregarRoteiroDestino(widget.searchText, dias, incluirTransporte);
     //print("ROTEIRO: + ${_roteiro.roteiro}");
   }
 
@@ -90,7 +91,7 @@ class _DestinoPageState extends State<DestinoPage> {
                       ),
                       Text(
                         widget.searchText,
-                        style: const TextStyle(fontSize: 20, color: ColorsApp.accentColor, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 20, color: ColorsApp.accentColor(), fontWeight: FontWeight.bold),
                       )
                     ],
                   ),
@@ -100,7 +101,7 @@ class _DestinoPageState extends State<DestinoPage> {
                   Row(
                     children: [
                       Container(
-                        color: ColorsApp.primaryColor,
+                        color: ColorsApp.primaryColor(),
                         padding: const EdgeInsets.all(10),
                         width: MediaQuery.of(context).size.width,
                         child: Column(
@@ -143,44 +144,148 @@ class _DestinoPageState extends State<DestinoPage> {
                   ),
                   Text(
                     "Imagens de ${widget.searchText}",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: ColorsApp.accentColor),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: ColorsApp.accentColor()),
                     textAlign: TextAlign.center,
                   ),
                   CarrosselDestino(destino: _destino, imagens: _imagensDestino),
                   Row(
                     children: [DepoimentosDestinosUsuarios(depoimento: _depoimentos)],
                   ),
-                  SizedBox(height: 20), // Espaçamento entre os widgets
-                  ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text("Roteiro"),
-                            content: SingleChildScrollView(
-                              child: Text(_roteiro.roteiro),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text("Fechar"),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    child: Text("Roteiro"),
-                  ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorsApp.primaryColor(),
+                          foregroundColor: ColorsApp.accentColor(),
+                          textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          )),
+                      onPressed: () {
+                        final scaffoldContext = context;
 
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            int? dias;
+                            bool incluirTransporte = true;
+
+                            return AlertDialog(
+                              title: const Text("Configure o seu roteiro"),
+                              content: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    TextField(
+                                      decoration: const InputDecoration(
+                                        labelText: "Quantidade de dias",
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (value) {
+                                        dias = int.tryParse(value);
+                                      },
+                                    ),
+                                    DropdownButton<bool>(
+                                      value: incluirTransporte,
+                                      onChanged: (bool? newValue) {
+                                        if (newValue != null) {
+                                          incluirTransporte = newValue;
+                                        }
+                                      },
+                                      items: const [
+                                        DropdownMenuItem(
+                                          value: true,
+                                          child: Text("Roteiro alternativo (Baixo Custo)"),
+                                        ),
+                                        DropdownMenuItem(
+                                          value: false,
+                                          child: Text("Roteiro normal"),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("Cancelar"),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    if (dias != null) {
+                                      Navigator.of(context).pop();
+
+                                      showDialog(
+                                        context: scaffoldContext,
+                                        barrierDismissible: false,
+                                        builder: (BuildContext context) {
+                                          return const Center(
+                                            child: CircularProgressIndicator(),
+                                          );
+                                        },
+                                      );
+
+                                      await _carregarRoteiros(dias!, incluirTransporte);
+
+                                      Navigator.of(scaffoldContext).pop();
+
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+                                          const SnackBar(
+                                            content: Text("Roteiro carregado com sucesso!"),
+                                            duration: Duration(seconds: 1),
+                                          ),
+                                        );
+
+                                        showDialog(
+                                          // ignore: duplicate_ignore
+                                          // ignore: use_build_context_synchronously
+                                          context: scaffoldContext,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text("Roteiro de Viagem"),
+                                              content: SingleChildScrollView(
+                                                child: Text(_roteiro.roteiro),
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text("Fechar"),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    } else {
+                                      ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+                                        const SnackBar(
+                                          content: Text("Por favor, insira a quantidade de dias."),
+                                          duration: Duration(seconds: 3),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  child: const Text("Confirmar"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: const Text("Roteiro de Viagem"),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   Row(
                     children: [
                       Container(
-                        color: ColorsApp.primaryColor,
+                        color: ColorsApp.primaryColor(),
                         padding: const EdgeInsets.all(10),
                         width: MediaQuery.of(context).size.width,
                         child: Column(

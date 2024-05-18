@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jornada/models/utils.dart';
 import 'package:jornada/services/shared_preferences.dart';
+import 'package:jornada/shared/colors.dart';
 import 'package:jornada/shared/widgets/app_images.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
@@ -54,10 +55,10 @@ class _PerfilPageState extends State<PerfilPage> {
       appBar: AppBar(
         title: const Text(
           "PERFIL",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: ColorsApp.textColorBlack, fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: ColorsApp.textColorBlack),
           onPressed: () {
             Navigator.pop(context);
             setState(() {});
@@ -68,19 +69,11 @@ class _PerfilPageState extends State<PerfilPage> {
           ? const Center(child: CircularProgressIndicator())
           : ListView(children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 child: Column(
                   children: [
                     Row(
-                      children: [
-                        Expanded(
-                            child: (fotoNome == "sem-foto.jpg" ||
-                                        fotoNome == "") &&
-                                    !subiuFoto
-                                ? Image.asset(AppImages.sem_foto)
-                                : Image.file(File(photo!.path)))
-                      ],
+                      children: [Expanded(child: (fotoNome == "sem-foto.jpg" || fotoNome == "") && !subiuFoto ? Image.asset(AppImages.sem_foto) : Image.file(File(photo!.path)))],
                     ),
                     TextButton(
                         onPressed: () {
@@ -93,15 +86,12 @@ class _PerfilPageState extends State<PerfilPage> {
                                       leading: const Icon(Icons.photo_camera),
                                       title: const Text("Acessar a câmera"),
                                       onTap: () async {
-                                        final ImagePicker picker =
-                                            ImagePicker();
-                                        photo = await picker.pickImage(
-                                            source: ImageSource.camera);
+                                        final ImagePicker picker = ImagePicker();
+                                        photo = await picker.pickImage(source: ImageSource.camera);
                                         if (photo != null) {
                                           photo = await Utils.cropImage(photo!);
                                           fotoNome = basename(photo!.path);
-                                          await photo!
-                                              .saveTo("$path/$fotoNome");
+                                          await photo!.saveTo("$path/$fotoNome");
                                           subiuFoto = true;
                                           setState(() {});
                                         }
@@ -111,18 +101,12 @@ class _PerfilPageState extends State<PerfilPage> {
                                       leading: const Icon(Icons.photo),
                                       title: const Text("Acessar a galeria"),
                                       onTap: () async {
-                                        final ImagePicker picker =
-                                            ImagePicker();
-                                        photo = await picker.pickImage(
-                                            source: ImageSource.gallery);
+                                        final ImagePicker picker = ImagePicker();
+                                        photo = await picker.pickImage(source: ImageSource.gallery);
                                         if (photo != null) {
-                                          //fotoNome = basename(photo!.path);
-                                          //await photo!.saveTo("$path/$fotoNome");
-                                          //cropImage(photo!);
                                           photo = await Utils.cropImage(photo!);
                                           fotoNome = basename(photo!.path);
-                                          await photo!
-                                              .saveTo("$path/$fotoNome");
+                                          await photo!.saveTo("$path/$fotoNome");
                                           subiuFoto = true;
                                           setState(() {});
                                         }
@@ -177,33 +161,17 @@ class _PerfilPageState extends State<PerfilPage> {
                         width: double.infinity,
                         child: TextButton(
                             onPressed: () async {
-                              await storage.setConfiguracoesNomeUsuario(
-                                  nomeController.text);
-                              await storage.setConfiguracoesTelefoneUsuario(
-                                  telefoneController.text);
-                              await storage.setConfiguracoesEmailUsuario(
-                                  emailController.text);
-                              await storage
-                                  .setConfiguracoesFotoUsuario(fotoNome);
+                              await storage.setConfiguracoesNomeUsuario(nomeController.text);
+                              await storage.setConfiguracoesTelefoneUsuario(telefoneController.text);
+                              await storage.setConfiguracoesEmailUsuario(emailController.text);
+                              await storage.setConfiguracoesFotoUsuario(fotoNome);
                               carregarDados();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          "Seus dados foram atualizados com sucesso!")));
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Seus dados foram atualizados com sucesso!")));
                             },
-                            style: ButtonStyle(
-                                shape: MaterialStateProperty.all(
-                                    RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10))),
-                                backgroundColor:
-                                    MaterialStateProperty.all(Colors.blue)),
+                            style: ButtonStyle(shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))), backgroundColor: MaterialStateProperty.all(Colors.blue)),
                             child: const Text(
                               "Salvar dados do perfil",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400),
+                              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w400),
                             )),
                       ),
                     ),
