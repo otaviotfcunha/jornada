@@ -29,7 +29,7 @@ Pedro Henrique Leite dos Santos<br>
 graph LR
 A((Inicio)) --> B[Home Page e recomendações]
 B -- Pesquisar local --> C[Exibe dicas do local]
-C -- Criar roteiro D{Roteiro baixo custo}
+C -- Criar roteiro --> D{Roteiro baixo custo}
 D -- Sim --> E[Exibe roteiro com custos reduzidos]
 D -- Não --> F[Exibe os melhores passeios]
 C -- Voltar --> B
