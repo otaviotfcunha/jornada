@@ -53,21 +53,24 @@ class _DestinoPageState extends State<DestinoPage> {
   }
 
   Future<void> _carregaDestino() async {
-    _destino = await _jornadaApiRepository.carregarDestinoPesquisa(widget.searchText);
+    _destino =
+        await _jornadaApiRepository.carregarDestinoPesquisa(widget.searchText);
     _imagensDestino.clear();
     await Future.forEach(_destino.results, (destino) async {
-      List<String> imagensDestino = await Utils.pegaImagensGoogle(destino.nome, 3);
+      List<String> imagensDestino =
+          await Utils.pegaImagensGoogle(destino.nome, 3);
       _imagensDestino.addAll(imagensDestino);
     });
   }
 
   Future<void> _carregaDepoimentos() async {
-    _depoimentos = await _jornadaApiRepository.carregarDepoimentos(widget.searchText);
+    _depoimentos =
+        await _jornadaApiRepository.carregarDepoimentos(widget.searchText);
   }
 
   Future<void> _carregarRoteiros(int dias, bool incluirTransporte) async {
-    _roteiro = await _jornadaApiRepository.carregarRoteiroDestino(widget.searchText, dias, incluirTransporte);
-    //print("ROTEIRO: + ${_roteiro.roteiro}");
+    _roteiro = await _jornadaApiRepository.carregarRoteiroDestino(
+        widget.searchText, dias, incluirTransporte);
   }
 
   @override
@@ -91,7 +94,10 @@ class _DestinoPageState extends State<DestinoPage> {
                       ),
                       Text(
                         widget.searchText,
-                        style: TextStyle(fontSize: 20, color: ColorsApp.accentColor(), fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: ColorsApp.accentColor(),
+                            fontWeight: FontWeight.bold),
                       )
                     ],
                   ),
@@ -109,30 +115,55 @@ class _DestinoPageState extends State<DestinoPage> {
                             Padding(
                               padding: const EdgeInsets.all(20.0),
                               child: Center(
-                                child: _destino.results[0].descricaoCompleta.isNotEmpty
-                                    ? Text(
-                                        _mostrarTextoCompleto
-                                            ? _destino.results[0].descricaoCompleta
-                                            : _destino.results[0].descricaoCompleta.length > 100
-                                                ? '${_destino.results[0].descricaoCompleta.substring(0, 100)}... '
-                                                : _destino.results[0].descricaoCompleta,
-                                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                        textAlign: TextAlign.justify,
-                                      )
-                                    : Image.asset(
-                                        AppImages.logo_animado,
-                                        width: MediaQuery.of(context).size.width * 0.5,
+                                child: _destino.results.isNotEmpty
+                                    ? _destino.results[0].descricaoCompleta
+                                            .isNotEmpty
+                                        ? Text(
+                                            _mostrarTextoCompleto
+                                                ? _destino.results[0]
+                                                    .descricaoCompleta
+                                                : _destino
+                                                            .results[0]
+                                                            .descricaoCompleta
+                                                            .length >
+                                                        100
+                                                    ? '${_destino.results[0].descricaoCompleta.substring(0, 100)}... '
+                                                    : _destino.results[0]
+                                                        .descricaoCompleta,
+                                            style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.justify,
+                                          )
+                                        : Image.asset(
+                                            AppImages.logo_animado,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.5,
+                                          )
+                                    : const Text(
+                                        'Nenhum destino encontrado',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
                                       ),
                               ),
                             ),
-                            if (_destino.results[0].descricaoCompleta.length > 100)
+                            if (_destino.results.isNotEmpty &&
+                                _destino.results[0].descricaoCompleta.length >
+                                    100)
                               GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    _mostrarTextoCompleto = !_mostrarTextoCompleto;
+                                    _mostrarTextoCompleto =
+                                        !_mostrarTextoCompleto;
                                   });
                                 },
-                                child: _mostrarTextoCompleto ? const Icon(Icons.expand_less) : const Text("Leia mais..."), // Ícone "leia mais" ou "recolher"
+                                child: _mostrarTextoCompleto
+                                    ? const Icon(Icons.expand_less)
+                                    : const Text(
+                                        "Leia mais..."), // Ícone "leia mais" ou "recolher"
                               ),
                           ],
                         ),
@@ -144,12 +175,17 @@ class _DestinoPageState extends State<DestinoPage> {
                   ),
                   Text(
                     "Imagens de ${widget.searchText}",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: ColorsApp.accentColor()),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: ColorsApp.accentColor()),
                     textAlign: TextAlign.center,
                   ),
                   CarrosselDestino(destino: _destino, imagens: _imagensDestino),
                   Row(
-                    children: [DepoimentosDestinosUsuarios(depoimento: _depoimentos)],
+                    children: [
+                      DepoimentosDestinosUsuarios(depoimento: _depoimentos)
+                    ],
                   ),
                   const SizedBox(height: 20),
                   Padding(
@@ -158,7 +194,8 @@ class _DestinoPageState extends State<DestinoPage> {
                       style: ElevatedButton.styleFrom(
                           backgroundColor: ColorsApp.primaryColor(),
                           foregroundColor: ColorsApp.accentColor(),
-                          textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          textStyle: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5),
                           )),
@@ -195,7 +232,8 @@ class _DestinoPageState extends State<DestinoPage> {
                                       items: const [
                                         DropdownMenuItem(
                                           value: true,
-                                          child: Text("Roteiro alternativo (Baixo Custo)"),
+                                          child: Text(
+                                              "Roteiro alternativo (Baixo Custo)"),
                                         ),
                                         DropdownMenuItem(
                                           value: false,
@@ -228,14 +266,17 @@ class _DestinoPageState extends State<DestinoPage> {
                                         },
                                       );
 
-                                      await _carregarRoteiros(dias!, incluirTransporte);
+                                      await _carregarRoteiros(
+                                          dias!, incluirTransporte);
 
                                       Navigator.of(scaffoldContext).pop();
 
                                       if (mounted) {
-                                        ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+                                        ScaffoldMessenger.of(scaffoldContext)
+                                            .showSnackBar(
                                           const SnackBar(
-                                            content: Text("Roteiro carregado com sucesso!"),
+                                            content: Text(
+                                                "Roteiro carregado com sucesso!"),
                                             duration: Duration(seconds: 1),
                                           ),
                                         );
@@ -246,7 +287,8 @@ class _DestinoPageState extends State<DestinoPage> {
                                           context: scaffoldContext,
                                           builder: (BuildContext context) {
                                             return AlertDialog(
-                                              title: const Text("Roteiro de Viagem"),
+                                              title: const Text(
+                                                  "Roteiro de Viagem"),
                                               content: SingleChildScrollView(
                                                 child: Text(_roteiro.roteiro),
                                               ),
@@ -263,9 +305,11 @@ class _DestinoPageState extends State<DestinoPage> {
                                         );
                                       }
                                     } else {
-                                      ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+                                      ScaffoldMessenger.of(scaffoldContext)
+                                          .showSnackBar(
                                         const SnackBar(
-                                          content: Text("Por favor, insira a quantidade de dias."),
+                                          content: Text(
+                                              "Por favor, insira a quantidade de dias."),
                                           duration: Duration(seconds: 3),
                                         ),
                                       );
