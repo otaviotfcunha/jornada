@@ -7,14 +7,17 @@ class ItensCarrosselImagens extends StatefulWidget {
   final DestinosHomeModel destinosHome;
   final List<String> imagens;
 
-  const ItensCarrosselImagens({Key? key, required this.destinosHome, required this.imagens}) : super(key: key);
+  const ItensCarrosselImagens(
+      {Key? key, required this.destinosHome, required this.imagens})
+      : super(key: key);
 
   @override
   State<ItensCarrosselImagens> createState() => _ItensCarrosselImagensState();
 }
 
 class _ItensCarrosselImagensState extends State<ItensCarrosselImagens> {
-  final CarouselController _carouselController = CarouselController();
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +51,9 @@ class _ItensCarrosselImagensState extends State<ItensCarrosselImagens> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.0),
                 image: DecorationImage(
-                  image: NetworkImage(index < widget.imagens.length ? widget.imagens[index] : ''),
+                  image: NetworkImage(index < widget.imagens.length
+                      ? widget.imagens[index]
+                      : ''),
                   fit: BoxFit.cover,
                 ),
               ),

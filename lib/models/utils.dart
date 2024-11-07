@@ -9,9 +9,14 @@ class Utils {
     late XFile arquivoSaida;
     CroppedFile? croppedFile = await ImageCropper().cropImage(
       sourcePath: imageFile.path,
-      aspectRatioPresets: [CropAspectRatioPreset.square, CropAspectRatioPreset.ratio3x2, CropAspectRatioPreset.original, CropAspectRatioPreset.ratio4x3, CropAspectRatioPreset.ratio16x9],
+      aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
       uiSettings: [
-        AndroidUiSettings(toolbarTitle: 'Cropper', toolbarColor: Colors.deepOrange, toolbarWidgetColor: Colors.white, initAspectRatio: CropAspectRatioPreset.original, lockAspectRatio: false),
+        AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
         IOSUiSettings(
           title: 'Cropper',
         ),
@@ -23,10 +28,12 @@ class Utils {
     return arquivoSaida;
   }
 
-  static Future<List<String>> pegaImagensGoogle(String searchText, int qtdImagens) async {
+  static Future<List<String>> pegaImagensGoogle(
+      String searchText, int qtdImagens) async {
     final String apiKey = dotenv.get("GOOGLESEARCH_APIKEY");
     final String searchEngineId = dotenv.get("GOOGLESEARCH_ENGINE_ID");
-    final String url = "https://www.googleapis.com/customsearch/v1?key=$apiKey&cx=$searchEngineId&searchType=image&q=$searchText";
+    final String url =
+        "https://www.googleapis.com/customsearch/v1?key=$apiKey&cx=$searchEngineId&searchType=image&q=$searchText";
     List<String> urlImagens = [];
 
     final dio = Dio();

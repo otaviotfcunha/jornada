@@ -7,14 +7,17 @@ class CarrosselDestino extends StatefulWidget {
   final DestinosPesquisaModel destino;
   final List<String> imagens;
 
-  const CarrosselDestino({Key? key, required this.destino, required this.imagens}) : super(key: key);
+  const CarrosselDestino(
+      {Key? key, required this.destino, required this.imagens})
+      : super(key: key);
 
   @override
   State<CarrosselDestino> createState() => _ItensCarrosselImagensState();
 }
 
 class _ItensCarrosselImagensState extends State<CarrosselDestino> {
-  final CarouselController _carouselController = CarouselController();
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
 
   @override
   Widget build(BuildContext context) {

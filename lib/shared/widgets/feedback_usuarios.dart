@@ -6,14 +6,16 @@ import 'package:carousel_slider/carousel_slider.dart';
 class FeedbackUsuarios extends StatefulWidget {
   final FeedbacksHomeModel comentario;
 
-  const FeedbackUsuarios({Key? key, required this.comentario}) : super(key: key);
+  const FeedbackUsuarios({Key? key, required this.comentario})
+      : super(key: key);
 
   @override
   State<FeedbackUsuarios> createState() => _FeedbackUsuariosState();
 }
 
 class _FeedbackUsuariosState extends State<FeedbackUsuarios> {
-  final CarouselController _carouselControllerComentarios = CarouselController();
+  final CarouselSliderController _carouselControllerComentarios =
+      CarouselSliderController();
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,10 @@ class _FeedbackUsuariosState extends State<FeedbackUsuarios> {
         children: [
           const Text(
             "USUÁRIOS DO APP DISSERAM",
-            style: TextStyle(color: ColorsApp.textColorBlack, fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: ColorsApp.textColorBlack,
+                fontSize: 16,
+                fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 5),
           CarouselSlider(
@@ -49,7 +54,8 @@ class _FeedbackUsuariosState extends State<FeedbackUsuarios> {
                 padding: const EdgeInsets.all(10.0),
                 decoration: BoxDecoration(
                   color: ColorsApp.textColor,
-                  borderRadius: BorderRadius.circular(10), // Ajuste o valor conforme necessário
+                  borderRadius: BorderRadius.circular(
+                      10), // Ajuste o valor conforme necessário
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
