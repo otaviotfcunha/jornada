@@ -69,7 +69,8 @@ class _HomePageState extends State<HomePage> {
     _destinosHome = await _jornadaApiRepository.carregarDestinosHome();
     _imagensDestinosHome.clear();
     await Future.forEach(_destinosHome.results, (destino) async {
-      List<String> imagensDestino = await Utils.pegaImagensGoogle(destino.nome, 1);
+      List<String> imagensDestino =
+          await Utils.pegaImagensGoogle(destino.nome, 1);
       _imagensDestinosHome.addAll(imagensDestino);
     });
   }
@@ -78,7 +79,8 @@ class _HomePageState extends State<HomePage> {
     _estacaoHome = await _jornadaApiRepository.carregarEstacaoHome();
     _imagensEstacao.clear();
     await Future.forEach(_estacaoHome.results, (estacao) async {
-      List<String> imagensEstacao = await Utils.pegaImagensGoogle(estacao.nome, 1);
+      List<String> imagensEstacao =
+          await Utils.pegaImagensGoogle(estacao.nome, 1);
       _imagensEstacao.addAll(imagensEstacao);
     });
   }
@@ -117,7 +119,8 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
                           child: TextField(
                             controller: _searchController,
                             onSubmitted: (_) => _search(),
@@ -133,13 +136,43 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                         ),
-                        ItensCarrosselImagens(destinosHome: _destinosHome, imagens: _imagensDestinosHome)
+                        ItensCarrosselImagens(
+                            destinosHome: _destinosHome,
+                            imagens: _imagensDestinosHome)
                       ],
                     ),
-                    Row(children: _imagensEstacao.isNotEmpty ? [AltaEstacao(estacao: _estacaoHome, imagens: _imagensEstacao)] : [Text('Sem imagens disponíveis')] // Ou qualquer outro widget de reserva
+                    Row(
+                        children: _imagensEstacao.isNotEmpty
+                            ? [
+                                AltaEstacao(
+                                    estacao: _estacaoHome,
+                                    imagens: _imagensEstacao)
+                              ]
+                            : [
+                                Text('Sem imagens disponíveis')
+                              ] // Ou qualquer outro widget de reserva
                         ),
                     Row(
-                      children: [FeedbackUsuarios(comentario: _feedbackHome)],
+                      children: _feedbackHome.results.isNotEmpty
+                          ? [FeedbackUsuarios(comentario: _feedbackHome)]
+                          : [
+                              Expanded(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 50),
+                                  child: Center(
+                                    child: Text(
+                                      'Não há feedbacks para serem exibidos...',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                     ),
                     Row(
                       children: [

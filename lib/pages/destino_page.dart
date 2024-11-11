@@ -183,9 +183,29 @@ class _DestinoPageState extends State<DestinoPage> {
                   ),
                   CarrosselDestino(destino: _destino, imagens: _imagensDestino),
                   Row(
-                    children: [
-                      DepoimentosDestinosUsuarios(depoimento: _depoimentos)
-                    ],
+                    children: _depoimentos.results.isNotEmpty
+                        ? [
+                            DepoimentosDestinosUsuarios(
+                                depoimento: _depoimentos)
+                          ]
+                        : [
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 50),
+                                child: Center(
+                                  child: Text(
+                                    'Não há depoimentos para serem exibidos...',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                   ),
                   const SizedBox(height: 20),
                   Padding(
@@ -208,116 +228,127 @@ class _DestinoPageState extends State<DestinoPage> {
                             int? dias;
                             bool incluirTransporte = true;
 
-                            return AlertDialog(
-                              title: const Text("Configure o seu roteiro"),
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    TextField(
-                                      decoration: const InputDecoration(
-                                        labelText: "Quantidade de dias",
-                                      ),
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (value) {
-                                        dias = int.tryParse(value);
-                                      },
-                                    ),
-                                    DropdownButton<bool>(
-                                      value: incluirTransporte,
-                                      onChanged: (bool? newValue) {
-                                        if (newValue != null) {
-                                          incluirTransporte = newValue;
-                                        }
-                                      },
-                                      items: const [
-                                        DropdownMenuItem(
-                                          value: true,
-                                          child: Text(
-                                              "Roteiro alternativo (Baixo Custo)"),
+                            return StatefulBuilder(
+                              builder:
+                                  (BuildContext context, StateSetter setState) {
+                                return AlertDialog(
+                                  title: const Text("Configure o seu roteiro"),
+                                  content: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        TextField(
+                                          decoration: const InputDecoration(
+                                            labelText: "Quantidade de dias",
+                                          ),
+                                          keyboardType: TextInputType.number,
+                                          onChanged: (value) {
+                                            dias = int.tryParse(value);
+                                          },
                                         ),
-                                        DropdownMenuItem(
-                                          value: false,
-                                          child: Text("Roteiro normal"),
+                                        DropdownButton<bool>(
+                                          value: incluirTransporte,
+                                          onChanged: (bool? newValue) {
+                                            if (newValue != null) {
+                                              setState(() {
+                                                incluirTransporte = newValue;
+                                              });
+                                            }
+                                          },
+                                          items: const [
+                                            DropdownMenuItem(
+                                              value: true,
+                                              child: Text(
+                                                  "Roteiro alternativo (Baixo Custo)"),
+                                            ),
+                                            DropdownMenuItem(
+                                              value: false,
+                                              child: Text("Roteiro normal"),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text("Cancelar"),
-                                ),
-                                TextButton(
-                                  onPressed: () async {
-                                    if (dias != null) {
-                                      Navigator.of(context).pop();
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text("Cancelar"),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        if (dias != null) {
+                                          Navigator.of(context).pop();
 
-                                      showDialog(
-                                        context: scaffoldContext,
-                                        barrierDismissible: false,
-                                        builder: (BuildContext context) {
-                                          return const Center(
-                                            child: CircularProgressIndicator(),
+                                          showDialog(
+                                            context: scaffoldContext,
+                                            barrierDismissible: false,
+                                            builder: (BuildContext context) {
+                                              return const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              );
+                                            },
                                           );
-                                        },
-                                      );
 
-                                      await _carregarRoteiros(
-                                          dias!, incluirTransporte);
+                                          await _carregarRoteiros(
+                                              dias!, incluirTransporte);
 
-                                      Navigator.of(scaffoldContext).pop();
+                                          Navigator.of(scaffoldContext).pop();
 
-                                      if (mounted) {
-                                        ScaffoldMessenger.of(scaffoldContext)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                                "Roteiro carregado com sucesso!"),
-                                            duration: Duration(seconds: 1),
-                                          ),
-                                        );
-
-                                        showDialog(
-                                          // ignore: duplicate_ignore
-                                          // ignore: use_build_context_synchronously
-                                          context: scaffoldContext,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: const Text(
-                                                  "Roteiro de Viagem"),
-                                              content: SingleChildScrollView(
-                                                child: Text(_roteiro.roteiro),
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(
+                                                    scaffoldContext)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                    "Roteiro carregado com sucesso!"),
+                                                duration: Duration(seconds: 1),
                                               ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: const Text("Fechar"),
-                                                ),
-                                              ],
                                             );
-                                          },
-                                        );
-                                      }
-                                    } else {
-                                      ScaffoldMessenger.of(scaffoldContext)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                              "Por favor, insira a quantidade de dias."),
-                                          duration: Duration(seconds: 3),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  child: const Text("Confirmar"),
-                                ),
-                              ],
+
+                                            showDialog(
+                                              context: scaffoldContext,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text(
+                                                      "Roteiro de Viagem"),
+                                                  content:
+                                                      SingleChildScrollView(
+                                                    child:
+                                                        Text(_roteiro.roteiro),
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child:
+                                                          const Text("Fechar"),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }
+                                        } else {
+                                          ScaffoldMessenger.of(scaffoldContext)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                  "Por favor, insira a quantidade de dias."),
+                                              duration: Duration(seconds: 3),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      child: const Text("Confirmar"),
+                                    ),
+                                  ],
+                                );
+                              },
                             );
                           },
                         );
