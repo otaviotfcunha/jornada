@@ -44,6 +44,7 @@ dependencies:
   carousel_slider: ^5.0.0
   http: ^1.2.1
   dio: ^5.7.0
+  flutter_launcher_icons: ^0.10.0
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,7 @@ flutter:
   assets:
     - images/
     - .env
+    - images/icons/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -102,3 +104,8 @@ flutter:
 
 dependency_overrides:
   win32: 5.0.0
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "images/icons/Icon.png"
