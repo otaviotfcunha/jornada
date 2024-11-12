@@ -32,6 +32,7 @@ class Utils {
       String searchText, int qtdImagens) async {
     final String apiKey = dotenv.get("GOOGLESEARCH_APIKEY");
     final String searchEngineId = dotenv.get("GOOGLESEARCH_ENGINE_ID");
+    searchText = "cidade $searchText";
     final String url =
         "https://www.googleapis.com/customsearch/v1?key=$apiKey&cx=$searchEngineId&searchType=image&q=$searchText";
     List<String> urlImagens = [];
