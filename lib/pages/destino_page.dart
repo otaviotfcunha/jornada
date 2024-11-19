@@ -1,10 +1,9 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:jornada/models/destino_depoimentos_model.dart';
 import 'package:jornada/models/destino_pesquisa_model.dart';
 import 'package:jornada/models/roteiro_destino_model.dart';
 import 'package:jornada/models/utils.dart';
+import 'package:jornada/pages/roteiro_page.dart';
 import 'package:jornada/repositories/jornada_api_repository.dart';
 import 'package:jornada/shared/colors.dart';
 import 'package:jornada/shared/widgets/app_images.dart';
@@ -28,6 +27,10 @@ class _DestinoPageState extends State<DestinoPage> {
   List<String> _imagensDestino = [];
   bool _mostrarTextoCompleto = false;
   bool carregando = false;
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _nomeController = TextEditingController();
+  final TextEditingController _feedbackController = TextEditingController();
 
   @override
   void initState() {
@@ -298,40 +301,13 @@ class _DestinoPageState extends State<DestinoPage> {
                                           Navigator.of(scaffoldContext).pop();
 
                                           if (mounted) {
-                                            ScaffoldMessenger.of(
-                                                    scaffoldContext)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                content: Text(
-                                                    "Roteiro carregado com sucesso!"),
-                                                duration: Duration(seconds: 1),
-                                              ),
-                                            );
-
-                                            showDialog(
-                                              context: scaffoldContext,
-                                              builder: (BuildContext context) {
-                                                return AlertDialog(
-                                                  title: const Text(
-                                                      "Roteiro de Viagem"),
-                                                  content:
-                                                      SingleChildScrollView(
-                                                    child:
-                                                        Text(_roteiro.roteiro),
-                                                  ),
-                                                  actions: [
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                      child:
-                                                          const Text("Fechar"),
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            );
+                                            Navigator.push(
+                                                scaffoldContext,
+                                                MaterialPageRoute(
+                                                    builder: (scaffoldContext) =>
+                                                        RoteiroPage(
+                                                            roteiro: _roteiro
+                                                                .roteiro)));
                                           }
                                         } else {
                                           ScaffoldMessenger.of(scaffoldContext)
@@ -354,6 +330,105 @@ class _DestinoPageState extends State<DestinoPage> {
                         );
                       },
                       child: const Text("Roteiro de Viagem"),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorsApp.primaryColor(),
+                          foregroundColor: ColorsApp.accentColor(),
+                          textStyle: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          )),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Envie seu depoimento'),
+                              content: Form(
+                                key: _formKey,
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      TextFormField(
+                                        controller: _nomeController,
+                                        decoration: const InputDecoration(
+                                            labelText: 'Nome'),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Por favor, insira seu nome';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      TextFormField(
+                                        controller: _feedbackController,
+                                        decoration: const InputDecoration(
+                                            labelText: 'Feedback'),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Por favor, insira seu feedback';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('Cancelar'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    if (_formKey.currentState!.validate()) {
+                                      final nome = _nomeController.text.trim();
+                                      final feedback =
+                                          _feedbackController.text.trim();
+
+                                      try {
+                                        await _jornadaApiRepository
+                                            .salvarFeedbackDestino(nome,
+                                                feedback, widget.searchText);
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                              content: Text(
+                                                  'Feedback enviado com sucesso!')),
+                                        );
+                                        _nomeController.clear();
+                                        _feedbackController.clear();
+
+                                        Navigator.of(context)
+                                            .pop(); // Fecha o modal
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                              content: Text(
+                                                  'Erro ao enviar feedback!')),
+                                        );
+                                      }
+                                    }
+                                  },
+                                  child: const Text('Enviar'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: const Text('Avalie o Aplicativo'),
                     ),
                   ),
                   const SizedBox(height: 20),

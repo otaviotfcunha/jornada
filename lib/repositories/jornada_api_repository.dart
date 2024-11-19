@@ -32,6 +32,42 @@ class JornadaApiRepository {
     return FeedbacksHomeModel.fromJson(data);
   }
 
+  Future<void> salvarFeedbackHome(
+      String nomeUsuario, String feedback, int nota) async {
+    const url = "/feedbacks";
+    try {
+      await _customDio.dio.post(
+        url,
+        data: {
+          'nomeUsuario': nomeUsuario,
+          'feedback': feedback,
+          'nota': nota,
+        },
+      );
+    } catch (e) {
+      print('Erro ao salvar feedback: $e');
+      throw Exception('Falha ao salvar feedback');
+    }
+  }
+
+  Future<void> salvarFeedbackDestino(
+      String nomeUsuario, String feedback, String local) async {
+    const url = "/depoimentos";
+    try {
+      await _customDio.dio.post(
+        url,
+        data: {
+          'nome': nomeUsuario,
+          'textoDepoimento': feedback,
+          'local': local,
+        },
+      );
+    } catch (e) {
+      print('Erro ao salvar feedback: $e');
+      throw Exception('Falha ao salvar feedback');
+    }
+  }
+
   Future<DepoimentosDestinoModel> carregarDepoimentos(String busca) async {
     var url = "/depoimentos/depoimentos-destino?local=$busca";
     var result = await _customDio.dio.get(url);
@@ -46,8 +82,10 @@ class JornadaApiRepository {
     return DestinosPesquisaModel.fromJson(data);
   }
 
-  Future<RoteiroDestinoModel> carregarRoteiroDestino(String busca, int qtdDias, bool alternativo) async {
-    var url = "/destinos/roteiro?nomeDestino=$busca&quantidadeDias=$qtdDias&alternativo=$alternativo";
+  Future<RoteiroDestinoModel> carregarRoteiroDestino(
+      String busca, int qtdDias, bool alternativo) async {
+    var url =
+        "/destinos/roteiro?nomeDestino=$busca&quantidadeDias=$qtdDias&alternativo=$alternativo";
     var result = await _customDio.dio.post(url);
     String data = result.data;
     return RoteiroDestinoModel.fromJson(data);

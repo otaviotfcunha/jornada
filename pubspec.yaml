@@ -45,6 +45,7 @@ dependencies:
   http: ^1.2.1
   dio: ^5.7.0
   flutter_launcher_icons: ^0.10.0
+  share_plus: ^10.1.2
 
 dev_dependencies:
   flutter_test:
@@ -103,7 +104,7 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 
 dependency_overrides:
-  win32: 5.0.0
+  win32: 5.8.0
 
 flutter_icons:
   android: true
