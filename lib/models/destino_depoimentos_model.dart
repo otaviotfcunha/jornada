@@ -19,7 +19,7 @@ class DepoimentosDestinoModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['results'] = results.map((v) => v.toJson()).toList();
     return data;
   }
@@ -44,22 +44,22 @@ class DepoimentoDestinoModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['nome'] = this.nome;
-    data['textoDepoimento'] = this.textoDepoimento;
-    data['local'] = this.local;
-    data['nota'] = this.nota;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['nome'] = nome;
+    data['textoDepoimento'] = textoDepoimento;
+    data['local'] = local;
+    data['nota'] = nota;
     return data;
   }
 
   Map<String, dynamic> toJsonEndpoint() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    data['nome'] = this.nome;
-    data['textoDepoimento'] = this.textoDepoimento;
-    data['local'] = this.local;
-    data['nota'] = this.nota;
+    data['id'] = id;
+    data['nome'] = nome;
+    data['textoDepoimento'] = textoDepoimento;
+    data['local'] = local;
+    data['nota'] = nota;
     return data;
   }
 }

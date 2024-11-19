@@ -8,10 +8,10 @@ class AltaEstacao extends StatefulWidget {
   final List<String> imagens;
 
   const AltaEstacao({
-    Key? key,
+    super.key,
     required this.estacao,
     required this.imagens,
-  }) : super(key: key);
+  });
 
   @override
   State<AltaEstacao> createState() => _AltaEstacaoState();

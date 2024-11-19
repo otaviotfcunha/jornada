@@ -8,7 +8,7 @@ class FeedbacksHomeModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['results'] = results.map((v) => v.toJson()).toList();
     return data;
   }
@@ -30,20 +30,20 @@ class FeedbackHomeModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['nomeUsuario'] = this.nomeUsuario;
-    data['feedback'] = this.feedback;
-    data['nota'] = this.nota;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['nomeUsuario'] = nomeUsuario;
+    data['feedback'] = feedback;
+    data['nota'] = nota;
     return data;
   }
 
   Map<String, dynamic> toJsonEndpoint() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    data['nomeUsuario'] = this.nomeUsuario;
-    data['feedback'] = this.feedback;
-    data['nota'] = this.nota;
+    data['id'] = id;
+    data['nomeUsuario'] = nomeUsuario;
+    data['feedback'] = feedback;
+    data['nota'] = nota;
     return data;
   }
 }

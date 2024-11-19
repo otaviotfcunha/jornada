@@ -168,7 +168,7 @@ class _PerfilPageState extends State<PerfilPage> {
                               carregarDados();
                               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Seus dados foram atualizados com sucesso!")));
                             },
-                            style: ButtonStyle(shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))), backgroundColor: MaterialStateProperty.all(Colors.blue)),
+                            style: ButtonStyle(shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))), backgroundColor: WidgetStateProperty.all(Colors.blue)),
                             child: const Text(
                               "Salvar dados do perfil",
                               style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w400),

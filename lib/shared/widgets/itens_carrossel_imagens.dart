@@ -9,10 +9,10 @@ class ItensCarrosselImagens extends StatefulWidget {
   final List<String> imagens;
 
   const ItensCarrosselImagens({
-    Key? key,
+    super.key,
     required this.destinosHome,
     required this.imagens,
-  }) : super(key: key);
+  });
 
   @override
   State<ItensCarrosselImagens> createState() => _ItensCarrosselImagensState();

@@ -6,7 +6,7 @@ import 'package:share_plus/share_plus.dart';
 class RoteiroPage extends StatelessWidget {
   final String roteiro;
 
-  const RoteiroPage({Key? key, required this.roteiro}) : super(key: key);
+  const RoteiroPage({super.key, required this.roteiro});
 
   @override
   Widget build(BuildContext context) {

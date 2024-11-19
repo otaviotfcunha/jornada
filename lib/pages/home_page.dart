@@ -13,7 +13,7 @@ import 'package:jornada/shared/widgets/itens_carrossel_imagens.dart';
 import 'package:jornada/shared/widgets/menu_lateral.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -26,8 +26,8 @@ class _HomePageState extends State<HomePage> {
   DestinosHomeModel _destinosHome = DestinosHomeModel([]);
   DestinosEstacaoModel _estacaoHome = DestinosEstacaoModel([]);
   FeedbacksHomeModel _feedbackHome = FeedbacksHomeModel([]);
-  List<String> _imagensEstacao = [];
-  List<String> _imagensDestinosHome = [];
+  final List<String> _imagensEstacao = [];
+  final List<String> _imagensDestinosHome = [];
   bool _carregando = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();

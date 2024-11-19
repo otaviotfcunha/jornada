@@ -6,8 +6,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 class DepoimentosDestinosUsuarios extends StatefulWidget {
   final DepoimentosDestinoModel depoimento;
 
-  const DepoimentosDestinosUsuarios({Key? key, required this.depoimento})
-      : super(key: key);
+  const DepoimentosDestinosUsuarios({super.key, required this.depoimento});
 
   @override
   State<DepoimentosDestinosUsuarios> createState() => _FeedbackUsuariosState();

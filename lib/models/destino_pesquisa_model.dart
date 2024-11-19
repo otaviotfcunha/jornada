@@ -8,7 +8,7 @@ class DestinosPesquisaModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['results'] = results.map((v) => v.toJson()).toList();
     return data;
   }
@@ -30,20 +30,20 @@ class DestinoPesquisaModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['nome'] = this.nome;
-    data['descricaoCompleta'] = this.descricaoCompleta;
-    data['estacaoRecomendada'] = this.estacaoRecomendada;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['nome'] = nome;
+    data['descricaoCompleta'] = descricaoCompleta;
+    data['estacaoRecomendada'] = estacaoRecomendada;
     return data;
   }
 
   Map<String, dynamic> toJsonEndpoint() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    data['nome'] = this.nome;
-    data['descricaoCompleta'] = this.descricaoCompleta;
-    data['estacaoRecomendada'] = this.estacaoRecomendada;
+    data['id'] = id;
+    data['nome'] = nome;
+    data['descricaoCompleta'] = descricaoCompleta;
+    data['estacaoRecomendada'] = estacaoRecomendada;
     return data;
   }
 }
