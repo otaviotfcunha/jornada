@@ -1,6 +1,9 @@
 # Projeto Jornada
 Projeto Integrador 2024/1 - Fatec Itapira.
 
+# Repositório API/AWS
+Todo desenvolvimento backend está no repositório: https://github.com/cleberpereiradev/jornada-api-deploy
+
 ## Requisitos:
 <ol>
     <li>- [x] Fazer um aplicativo em flutter para uma solução inteligente​</li>
@@ -11,7 +14,7 @@ Projeto Integrador 2024/1 - Fatec Itapira.
     <li>- [x] Utilizar IA</li>
 </ol> 
 
-## Cruso:
+## Curso:
 
 [DSM] Desenvolvimento de software multiplataforma
 
